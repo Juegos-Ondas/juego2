@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Desafío HTML5 · IFCD0110</title>
+<style>
+  :root {
+    --bg-dark: #090d16;
+    --bg-card: #121829;
+    --bg-card-hover: #1a233a;
+    --primary: #00f5d4;
+    --primary-glow: rgba(0, 245, 212, 0.35);
+    --secondary: #9b5de5;
+    --accent: #fee440;
+    --text-main: #f1f5f9;
+    --text-muted: #94a3b8;
+    --success: #00e676;
+    --success-bg: rgba(0, 230, 118, 0.14);
+    --error: #ff4d6d;
+    --error-bg: rgba(255, 77, 109, 0.14);
+    --border: rgba(255, 255, 255, 0.1);
+    --radius: 16px;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html, body {
+    height: 100%;
+    min-height: 100dvh;
+    background: radial-gradient(circle at top right, #161e35, var(--bg-dark) 65%);
+    color: var(--text-main);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    line-height: 1.5;
+    overflow-x: hidden;
+  }
+
+  .app-shell {
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+    max-width: 680px;
+    margin: 0 auto;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* Pantallas */
+  .screen {
+    display: none;
+    flex-direction: column;
+    flex: 1;
+    padding: 20px 16px 104px;
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  .screen.active {
+    display: flex;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Bienvenida */
+  .welcome-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 32px 24px;
+    margin: auto 0;
+    text-align: center;
+    box-shadow: var(--shadow);
+  }
+
+  .logo-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 84px;
+    height: 84px;
+    font-size: 46px;
+    background: linear-gradient(135deg, rgba(0, 245, 212, 0.15), rgba(155, 93, 229, 0.25));
+    border: 2px solid var(--primary);
+    border-radius: 24px;
+    margin-bottom: 18px;
+    box-shadow: 0 0 25px var(--primary-glow);
+  }
+
+  .course-pill {
+    display: inline-block;
+    background: rgba(155, 93, 229, 0.2);
+    color: #d8b4fe;
+    border: 1px solid rgba(155, 93, 229, 0.4);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 999px;
+    margin-bottom: 12px;
+  }
+
+  h1 {
+    font-size: clamp(1.7rem, 5vw, 2.2rem);
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 14px;
+    background: linear-gradient(90deg, #ffffff, var(--primary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .welcome-desc {
+    color: var(--text-muted);
+    font-size: 0.98rem;
+    margin-bottom: 22px;
+  }
+
+  .tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 22px;
+  }
+
+  .topic-tag {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    padding: 6px 12px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-main);
+  }
+
+  .notice-box {
+    background: rgba(254, 228, 64, 0.08);
+    border: 1px dashed rgba(254, 228, 64, 0.45);
+    border-radius: 14px;
+    padding: 12px 14px;
+    font-size: 0.86rem;
+    color: #fef08a;
+  }
+
+  /* Header Juego */
+  .game-header {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  }
+
+  .stats-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+
+  .progress-label {
+    color: var(--text-muted);
+  }
+
+  .badges-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .stat-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 800;
+  }
+
+  .score-pill {
+    background: rgba(0, 245, 212, 0.14);
+    color: var(--primary);
+    border: 1px solid rgba(0, 245, 212, 0.35);
+  }
+
+  .streak-pill {
+    background: rgba(254, 228, 64, 0.14);
+    color: var(--accent);
+    border: 1px solid rgba(254, 228, 64, 0.35);
+  }
+
+  .progress-track {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--secondary), var(--primary));
+    border-radius: 999px;
+    transition: width 0.35s ease;
+  }
+
+  /* Tarjeta de Pregunta */
+  .question-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 20px 18px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+  }
+
+  .question-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .module-tag {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--primary);
+    background: rgba(0, 245, 212, 0.1);
+    padding: 4px 10px;
+    border-radius: 8px;
+  }
+
+  .surprise-active-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: #090d16;
+    background: var(--accent);
+    padding: 4px 10px;
+    border-radius: 8px;
+    animation: pulseBadge 1.5s infinite;
+  }
+
+  @keyframes pulseBadge {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.04); }
+  }
+
+  .question-text {
+    font-size: clamp(1.08rem, 3.8vw, 1.25rem);
+    font-weight: 700;
+    color: var(--text-main);
+    word-break: break-word;
+  }
+
+  /* Opciones */
+  .options-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .option-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    min-height: 62px;
+    padding: 12px 16px;
+    background: var(--bg-card);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text-main);
+    font-family: inherit;
+    font-size: 0.98rem;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+    transition: transform 0.12s ease, border-color 0.2s ease, background-color 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  .option-btn:hover:not(:disabled) {
+    background: var(--bg-card-hover);
+    border-color: rgba(0, 245, 212, 0.5);
+  }
+
+  .option-btn:active:not(:disabled) {
+    transform: scale(0.985);
+  }
+
+  .option-btn:disabled {
+    cursor: default;
+  }
+
+  .option-letter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--primary);
+    font-weight: 800;
+    font-size: 0.92rem;
+  }
+
+  .option-text {
+    flex: 1;
+    word-break: break-word;
+  }
+
+  .option-btn.correct {
+    background: var(--success-bg);
+    border-color: var(--success);
+    color: #ffffff;
+  }
+
+  .option-btn.correct .option-letter {
+    background: var(--success);
+    color: #062814;
+  }
+
+  .option-btn.wrong {
+    background: var(--error-bg);
+    border-color: var(--error);
+    color: #ffffff;
+  }
+
+  .option-btn.wrong .option-letter {
+    background: var(--error);
+    color: #ffffff;
+  }
+
+  .option-btn.eliminated {
+    opacity: 0.28;
+    text-decoration: line-through;
+    pointer-events: none;
+  }
+
+  /* Retroalimentación */
+  .feedback-area {
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+    animation: fadeIn 0.25s ease-out;
+  }
+
+  .feedback-area.visible {
+    display: flex;
+  }
+
+  .feedback-banner {
+    border-radius: var(--radius);
+    padding: 16px;
+    border: 1px solid transparent;
+  }
+
+  .feedback-banner.success {
+    background: var(--success-bg);
+    border-color: var(--success);
+  }
+
+  .feedback-banner.error {
+    background: var(--error-bg);
+    border-color: var(--error);
+  }
+
+  .feedback-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .feedback-banner.success .feedback-title { color: var(--success); }
+  .feedback-banner.error .feedback-title { color: #ff8fa3; }
+
+  .feedback-sub {
+    font-size: 0.92rem;
+    color: var(--text-main);
+  }
+
+  .explanation-box {
+    background: #161f36;
+    border-left: 4px solid var(--secondary);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+
+  .explanation-label {
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #c084fc;
+    margin-bottom: 5px;
+  }
+
+  .explanation-text {
+    font-size: 0.93rem;
+    color: #e2e8f0;
+  }
+
+  .joke-card {
+    background: linear-gradient(135deg, rgba(155, 93, 229, 0.16), rgba(0, 245, 212, 0.08));
+    border: 1px solid rgba(155, 93, 229, 0.45);
+    border-radius: 14px;
+    padding: 14px 16px;
+  }
+
+  .joke-header {
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+
+  .joke-body {
+    font-size: 0.92rem;
+    color: var(--text-main);
+  }
+
+  .chest-toast {
+    background: linear-gradient(135deg, rgba(254, 228, 64, 0.2), rgba(0, 245, 212, 0.18));
+    border: 1px solid var(--accent);
+    border-radius: 14px;
+    padding: 12px 16px;
+    font-weight: 800;
+    color: var(--accent);
+    text-align: center;
+    font-size: 0.96rem;
+  }
+
+  /* Barra inferior fija (zona del pulgar) */
+  .bottom-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    background: linear-gradient(to top, var(--bg-dark) 75%, rgba(9, 13, 22, 0));
+    z-index: 40;
+    display: flex;
+    justify-content: center;
+  }
+
+  .bottom-bar-inner {
+    width: 100%;
+    max-width: 648px;
+  }
+
+  .primary-btn {
+    width: 100%;
+    min-height: 60px;
+    border: none;
+    border-radius: var(--radius);
+    background: linear-gradient(135deg, var(--primary), #00c4a7);
+    color: #06131c;
+    font-family: inherit;
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    box-shadow: 0 8px 24px var(--primary-glow);
+    transition: transform 0.12s ease, opacity 0.2s ease, filter 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .primary-btn:hover:not(:disabled) {
+    filter: brightness(1.06);
+  }
+
+  .primary-btn:active:not(:disabled) {
+    transform: scale(0.985);
+  }
+
+  .primary-btn.hidden {
+    display: none;
+  }
+
+  /* Modal Sorpresa Pre-pregunta */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 8, 15, 0.85);
+    backdrop-filter: blur(6px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 100;
+    animation: fadeIn 0.25s ease-out;
+  }
+
+  .modal-overlay.active {
+    display: flex;
+  }
+
+  .modal-card {
+    background: var(--bg-card);
+    border: 2px solid var(--accent);
+    border-radius: 24px;
+    padding: 28px 22px;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 0 40px rgba(254, 228, 64, 0.25);
+  }
+
+  .modal-icon {
+    font-size: 54px;
+    margin-bottom: 12px;
+    display: inline-block;
+  }
+
+  .modal-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .modal-desc {
+    color: var(--text-main);
+    font-size: 0.96rem;
+    margin-bottom: 22px;
+  }
+
+  /* Pantalla Final */
+  .results-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 28px 20px;
+    margin: auto 0;
+    text-align: center;
+    box-shadow: var(--shadow);
+  }
+
+  .result-trophy {
+    font-size: 56px;
+    margin-bottom: 10px;
+  }
+
+  .result-score-big {
+    font-size: 2.6rem;
+    font-weight: 900;
+    color: var(--primary);
+    line-height: 1.1;
+    margin: 8px 0 4px;
+  }
+
+  .result-subtitle {
+    color: var(--text-muted);
+    font-size: 0.92rem;
+    margin-bottom: 20px;
+  }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .metric-box {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 10px;
+  }
+
+  .metric-val {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--text-main);
+  }
+
+  .metric-lbl {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .motivation-box {
+    background: rgba(0, 245, 212, 0.1);
+    border: 1px solid rgba(0, 245, 212, 0.35);
+    border-radius: 14px;
+    padding: 14px 16px;
+    font-size: 0.96rem;
+    font-weight: 600;
+    color: #ccfbf1;
+  }
+
+  /* Canvas Confeti */
+  #confetti-canvas {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 90;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="confetti-canvas"></canvas>
+
+<div class="app-shell">
+  <!-- PANTALLA 1: BIENVENIDA -->
+  <section id="screen-welcome" class="screen active" aria-labelledby="game-title">
+    <div class="welcome-card">
+      <div class="logo-badge" aria-hidden="true">💻</div>
+      <div class="course-pill">Certificado de Profesionalidad IFCD0110</div>
+      <h1 id="game-title">Desafío HTML5</h1>
+      <p class="welcome-desc">
+        Pon a prueba tus conocimientos sobre estructura semántica HTML5, multimedia, enlaces, tablas y estilos básicos.
+      </p>
+      <div class="tags-container">
+        <span class="topic-tag">🏗️ Estructura HTML5</span>
+        <span class="topic-tag">🔗 Enlaces y Media</span>
+        <span class="topic-tag">📊 Tablas</span>
+        <span class="topic-tag">🎨 Estilos básicos</span>
+      </div>
+      <div class="notice-box">
+        🎲 <strong>Orden 100% Aleatorio + Sorpresas:</strong> Tanto las preguntas como sus opciones se mezclan en cada partida y reintento, además de incluir comodines, escudos, cofres y pausas de humor.
+      </div>
+    </div>
+  </section>
+
+  <!-- PANTALLA 2: JUEGO -->
+  <section id="screen-game" class="screen" aria-live="polite">
+    <header class="game-header">
+      <div class="stats-row">
+        <span id="progress-text" class="progress-label">Pregunta 1 de 30</span>
+        <div class="badges-group">
+          <span id="streak-badge" class="stat-pill streak-pill" title="Racha y multiplicador">🔥 0 (×1)</span>
+          <span id="score-badge" class="stat-pill score-pill">💎 0 pts</span>
+        </div>
+      </div>
+      <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress-bar-container">
+        <div id="progress-fill" class="progress-fill"></div>
+      </div>
+    </header>
+
+    <article class="question-card">
+      <div class="question-meta">
+        <span id="question-topic" class="module-tag">IFCD0110 · HTML5</span>
+        <span id="active-surprise-tag" class="surprise-active-badge" style="display:none;"></span>
+      </div>
+      <h2 id="question-text" class="question-text"></h2>
+    </article>
+
+    <div id="options-container" class="options-grid" role="group" aria-label="Opciones de respuesta"></div>
+
+    <div id="feedback-area" class="feedback-area">
+      <div id="feedback-banner" class="feedback-banner">
+        <div class="feedback-title">
+          <span id="feedback-heading"></span>
+          <span id="feedback-points"></span>
+        </div>
+        <p id="feedback-subtext" class="feedback-sub"></p>
+      </div>
+
+      <div id="chest-toast" class="chest-toast" style="display:none;"></div>
+
+      <div class="explanation-box">
+        <div class="explanation-label">💡 Explicación didáctica</div>
+        <div id="explanation-text" class="explanation-text"></div>
+      </div>
+
+      <div id="joke-card" class="joke-card" style="display:none;">
+        <div class="joke-header">😂 Pausa de humor</div>
+        <div id="joke-text" class="joke-body"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PANTALLA 3: FINAL -->
+  <section id="screen-results" class="screen" aria-labelledby="results-title">
+    <div class="results-card">
+      <div id="result-trophy" class="result-trophy" aria-hidden="true">🏆</div>
+      <div class="course-pill">Resultados Finales · IFCD0110</div>
+      <h1 id="results-title">¡Desafío Completado!</h1>
+      <div id="final-score" class="result-score-big">0 pts</div>
+      <p class="result-subtitle">Puntuación total acumulada</p>
+
+      <div class="metrics-grid">
+        <div class="metric-box">
+          <div id="metric-accuracy" class="metric-val">0%</div>
+          <div class="metric-lbl">Porcentaje de aciertos</div>
+        </div>
+        <div class="metric-box">
+          <div id="metric-fraction" class="metric-val">0 / 30</div>
+          <div class="metric-lbl">Aciertos / Total</div>
+        </div>
+        <div class="metric-box">
+          <div id="metric-streak" class="metric-val">0</div>
+          <div class="metric-lbl">Mejor racha</div>
+        </div>
+        <div class="metric-box">
+          <div id="metric-surprises" class="metric-val">0</div>
+          <div class="metric-lbl">Sorpresas encontradas</div>
+        </div>
+      </div>
+
+      <div id="motivation-box" class="motivation-box"></div>
+    </div>
+  </section>
+
+  <!-- BOTÓN DE ACCIÓN PRINCIPAL FIJO -->
+  <div class="bottom-bar">
+    <div class="bottom-bar-inner">
+      <button id="btn-start" class="primary-btn" type="button">🚀 Iniciar Desafío</button>
+      <button id="btn-next" class="primary-btn hidden" type="button">Siguiente Pregunta ➔</button>
+      <button id="btn-restart" class="primary-btn hidden" type="button">🔄 Reintentar Desafío</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL SORPRESA PRE-PREGUNTA -->
+<div id="surprise-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal-card">
+    <div id="modal-icon" class="modal-icon">⚡</div>
+    <h3 id="modal-title" class="modal-title">¡Sorpresa Activa!</h3>
+    <p id="modal-desc" class="modal-desc"></p>
+    <button id="btn-modal-go" class="primary-btn" type="button">¡Vamos!</button>
+  </div>
+</div>
+
+<script>
+(() => {
+  const QUESTIONS = [
+    {
+      topic: "Estructura HTML5",
+      question: "¿Qué declara que el documento usa HTML5 en la primera línea?",
+      options: ["<html5>", "<!DOCTYPE html>", "<meta html=\"5\">", "<head html5>"],
+      correctIndex: 1,
+      explanation: "<!DOCTYPE html> indica al navegador que el documento sigue el estándar HTML5 y evita que entre en modos de compatibilidad antiguos. No es una etiqueta HTML en sí, sino una declaración inicial."
+    },
+    {
+      topic: "Estructura HTML5",
+      question: "¿Para qué sirve <meta charset=\"UTF-8\"> dentro de <head>?",
+      options: ["Para dar color al texto", "Para enlazar la hoja CSS", "Para soportar tildes y eñes", "Para crear el menú superior"],
+      correctIndex: 2,
+      explanation: "UTF-8 es la codificación estándar que permite mostrar correctamente tildes, eñes, símbolos y emojis sin que aparezcan caracteres extraños en el navegador."
+    },
+    {
+      topic: "Estructura HTML5",
+      question: "¿Qué etiqueta ayuda a adaptar la vista a móviles y tablets?",
+      options: ["<meta name=\"viewport\"...>", "<body mobile=\"true\">", "<nav responsive>", "<section mobile>"],
+      correctIndex: 0,
+      explanation: "La etiqueta <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"> controla cómo se escala y ajusta la página al ancho de pantalla del dispositivo."
+    },
+    {
+      topic: "Estructura HTML5",
+      question: "¿Dónde se escribe el título que aparece en la pestaña del navegador?",
+      options: ["Dentro de <footer>", "Dentro de <article>", "Dentro de <main>", "Dentro de <title> en <head>"],
+      correctIndex: 3,
+      explanation: "<title> va dentro de <head> y define el título de la pestaña o ventana del navegador y de marcadores, no un titular visible dentro del cuerpo de la página."
+    },
+    {
+      topic: "Semántica HTML5",
+      question: "¿Qué etiqueta semántica agrupa el contenido principal de la página?",
+      options: ["<main>", "<meta>", "<tr>", "<hr>"],
+      correctIndex: 0,
+      explanation: "<main> representa el contenido central y único del documento (excluyendo cabeceras repetidas, menús o pies de página), aportando estructura semántica y accesibilidad."
+    },
+    {
+      topic: "Semántica HTML5",
+      question: "¿Qué etiqueta representa una entrada o artículo independiente?",
+      options: ["<td>", "<article>", "<br>", "<source>"],
+      correctIndex: 1,
+      explanation: "<article> se usa para un contenido autocontenido que tiene sentido por sí mismo, como cada artículo del blog o cada tarjeta de noticia en el listado."
+    },
+    {
+      topic: "Semántica HTML5",
+      question: "¿Qué etiqueta semántica se usa para el pie de página?",
+      options: ["<header>", "<aside>", "<footer>", "<ol>"],
+      correctIndex: 2,
+      explanation: "<footer> representa el pie del documento o de una sección; en nuestro portal contiene datos de contacto de la clínica y el enlace para volver arriba."
+    },
+    {
+      topic: "Semántica HTML5",
+      question: "¿Qué etiqueta semántica se usa para el menú de navegación?",
+      options: ["<nav>", "<th>", "<strong>", "<em>"],
+      correctIndex: 0,
+      explanation: "<nav> agrupa enlaces de navegación principales (como ir a la Portada, Dónde estamos o el Blog) para que lectores de pantalla y buscadores identifiquen el menú."
+    },
+    {
+      topic: "Texto y Jerarquía",
+      question: "¿Cuál es la jerarquía correcta de títulos en un artículo?",
+      options: ["Varios <h1> para subtítulos", "Empezar por <h5> y subir", "Solo usar <p> en negrita", "<h1> principal y <h2> en apartados"],
+      correctIndex: 3,
+      explanation: "Los encabezados siguen un orden jerárquico (<h1> para el título principal y <h2>, <h3>... para subapartados), evitando usar <p> en negrita cuando realmente hay una estructura de títulos."
+    },
+    {
+      topic: "Texto y Jerarquía",
+      question: "¿Qué etiqueta crea un párrafo de texto?",
+      options: ["<p>", "<ul>", "<iframe>", "<hr>"],
+      correctIndex: 0,
+      explanation: "<p> delimita un párrafo de texto y el navegador le aplica automáticamente márgenes superiores e inferiores por defecto."
+    },
+    {
+      topic: "Listas HTML",
+      question: "¿Qué etiqueta crea una lista con viñetas (puntos)?",
+      options: ["<ol>", "<ul>", "<table>", "<video>"],
+      correctIndex: 1,
+      explanation: "<ul> (unordered list) crea una lista sin orden numérico con viñetas, mientras que <ol> crea una lista ordenada (1, 2, 3...)."
+    },
+    {
+      topic: "Listas HTML",
+      question: "¿Qué etiqueta representa cada elemento dentro de <ul> u <ol>?",
+      options: ["<row>", "<item>", "<li>", "<link>"],
+      correctIndex: 2,
+      explanation: "<li> (list item) define cada elemento individual de una lista <ul> u <ol>."
+    },
+    {
+      topic: "Texto y Semántica",
+      question: "¿Qué diferencia semántica hay entre <strong> y <em>?",
+      options: ["No tienen diferencia visual", "<strong> es cursiva y <em> negrita", "Ambas sirven para enlaces", "<strong> da fuerte énfasis; <em> énfasis"],
+      correctIndex: 3,
+      explanation: "<strong> indica importancia o urgencia (suele verse en negrita) y <em> marca énfasis o matiz (suele verse en cursiva), más allá del aspecto visual."
+    },
+    {
+      topic: "Separadores y Saltos",
+      question: "¿Qué etiqueta dibuja una línea separadora horizontal?",
+      options: ["<hr>", "<br>", "<tr>", "<nav>"],
+      correctIndex: 0,
+      explanation: "<hr> (horizontal rule) inserta una separación temática o línea horizontal entre bloques de contenido."
+    },
+    {
+      topic: "Separadores y Saltos",
+      question: "¿Para qué sirve la etiqueta <br>?",
+      options: ["Para crear una tabla", "Para insertar un salto de línea", "Para enlazar otra página", "Para centrar una imagen"],
+      correctIndex: 1,
+      explanation: "<br> fuerza un salto de línea dentro de un texto o bloque, como entre dos reproductores o para añadir aire vertical puntual."
+    },
+    {
+      topic: "Imágenes y Rutas",
+      question: "¿Qué atributo es obligatorio en <img> para indicar la imagen?",
+      options: ["href", "controls", "src", "loop"],
+      correctIndex: 2,
+      explanation: "src (source) especifica la ruta o URL del archivo de imagen que debe cargar el navegador."
+    },
+    {
+      topic: "Imágenes y Rutas",
+      question: "¿Para qué sirve el atributo alt en una imagen <img>?",
+      options: ["Para redondear bordes", "Para girar la foto 90 grados", "Para reproducir sonido", "Texto alternativo y accesibilidad"],
+      correctIndex: 3,
+      explanation: "alt describe el contenido de la imagen para lectores de pantalla y se muestra si el archivo no carga o la ruta está mal escrita."
+    },
+    {
+      topic: "Imágenes y Rutas",
+      question: "¿Qué significa ../ en una ruta relativa?",
+      options: ["Subir un nivel de carpeta", "Ir a la raíz de internet", "Borrar el archivo actual", "Abrir en otra pestaña"],
+      correctIndex: 0,
+      explanation: "En rutas relativas, ../ retrocede a la carpeta padre (un nivel hacia arriba) para localizar archivos o carpetas situadas fuera de la carpeta actual."
+    },
+    {
+      topic: "Imágenes y Rutas",
+      question: "Si blog.html está en Ejercicios html y la foto en img/foto.jpg, ¿qué ruta vale?",
+      options: ["../img/foto.jpg", "../../foto.jpg", "img/foto.jpg", "/img/foto.jpg"],
+      correctIndex: 2,
+      explanation: "Al estar blog.html y la carpeta img al mismo nivel dentro de Ejercicios html, basta con entrar en img y poner img/foto.jpg."
+    },
+    {
+      topic: "Enlaces",
+      question: "¿Qué etiqueta y atributo crea un enlace a otra página o archivo HTML?",
+      options: ["<link to=\"pagina.html\">", "<a href=\"pagina.html\">", "<img href=\"pagina.html\">", "<nav src=\"pagina.html\">"],
+      correctIndex: 1,
+      explanation: "Los hipervínculos en HTML se crean con la etiqueta <a> y el atributo href indicando el destino (otro archivo HTML, una web externa o un ancla #id)."
+    },
+    {
+      topic: "Enlaces",
+      question: "¿Qué hace <a href=\"#top\"> si el <body> tiene id=\"top\"?",
+      options: ["Abre el correo del paciente", "Borra el pie de página", "Descarga un archivo PDF", "Desplaza la vista arriba del todo"],
+      correctIndex: 3,
+      explanation: "Un enlace con #top apunta al elemento que tenga id=\"top\" en la misma página y hace scroll hasta esa posición."
+    },
+    {
+      topic: "Multimedia",
+      question: "¿Qué atributo de <video> muestra play, pausa, volumen y barra?",
+      options: ["controls", "alt", "colspan", "type=\"text\""],
+      correctIndex: 0,
+      explanation: "Sin el atributo controls, la etiqueta <video> (o <audio>) no muestra los controles nativos del navegador para reproducir o pausar el archivo."
+    },
+    {
+      topic: "Multimedia",
+      question: "¿Qué etiqueta se usa para incrustar un vídeo de YouTube o un mapa?",
+      options: ["<video>", "<iframe>", "<figure>", "<caption>"],
+      correctIndex: 1,
+      explanation: "<iframe> incrusta contenido externo (como un reproductor de YouTube con /embed/... o un mapa de Google Maps) dentro de la página."
+    },
+    {
+      topic: "Multimedia",
+      question: "Si un vídeo de YouTube en <iframe> da \"Error 153\", ¿qué puede ocurrir?",
+      options: ["Falta cerrar <body>", "Que <h1> está en azul", "Bloqueo de inserción o entorno", "Que falta <hr> antes"],
+      correctIndex: 2,
+      explanation: "Cuando el reproductor embebido muestra \"Error 153\" pero abre bien en YouTube, suele deberse a restricciones de inserción del vídeo/canal o a condiciones del entorno o navegador donde se prueba."
+    },
+    {
+      topic: "Tablas HTML",
+      question: "En una <table>, ¿qué etiqueta define una fila?",
+      options: ["<tr>", "<td>", "<th>", "<ul>"],
+      correctIndex: 0,
+      explanation: "<tr> (table row) crea una fila horizontal dentro de una tabla, y dentro de ella se colocan las celdas <th> (encabezado) o <td> (dato)."
+    },
+    {
+      topic: "Tablas HTML",
+      question: "En una <table>, ¿qué diferencia hay entre <th> y <td>?",
+      options: ["<th> es para enlaces y <td> para fotos", "No hay diferencia en HTML", "<td> es para títulos y <th> para párrafos", "<th> es celda de cabecera; <td> de dato"],
+      correctIndex: 3,
+      explanation: "<th> (table header) marca celdas de encabezado de fila o columna (suele verse centrada y en negrita), mientras que <td> (table data) contiene los datos de cada celda."
+    },
+    {
+      topic: "Estilos y Tablas",
+      question: "¿Qué hace border-collapse: collapse; en una tabla?",
+      options: ["Oculta toda la tabla", "Une bordes dobles en un borde único", "Pone viñetas a las celdas", "Hace el vídeo a pantalla completa"],
+      correctIndex: 1,
+      explanation: "Por defecto, los bordes de <table> y <td>/<th> pueden verse separados; border-collapse: collapse; los fusiona en un único borde limpio."
+    },
+    {
+      topic: "Estilos y Navegación",
+      question: "¿Qué hace display: flex; en el <ul> del menú de navegación?",
+      options: ["Pone los elementos en horizontal", "Añade números a la lista", "Cambia el idioma a inglés", "Crea una línea horizontal"],
+      correctIndex: 0,
+      explanation: "display: flex; activa el modelo flexible en el contenedor, colocando los elementos hijos (<li>) en línea horizontal de forma sencilla."
+    },
+    {
+      topic: "Estilos y Navegación",
+      question: "¿Qué propiedad CSS añade separación entre elementos flexibles?",
+      options: ["gap", "charset", "src", "allowfullscreen"],
+      correctIndex: 0,
+      explanation: "gap (por ejemplo gap: 18px;) crea espacio limpio entre los elementos flexibles sin tener que calcular márgenes laterales manuales en cada uno."
+    },
+    {
+      topic: "Estilos básicos",
+      question: "¿Qué hace border-radius: 12px; en una imagen o bloque?",
+      options: ["Centra el texto a la derecha", "Redondea las esquinas 12 píxeles", "Aumenta el tamaño de letra", "Repite el vídeo en bucle"],
+      correctIndex: 1,
+      explanation: "border-radius redondea las esquinas de cajas, imágenes, reproductores o pies de página según el radio indicado en píxeles."
+    }
+  ];
+
+  const JOKES = [
+    "— ¿Por qué los desarrolladores web odian salir al campo? — Porque hay demasiados *bugs* y cero cobertura Wi-Fi.",
+    "Una etiqueta `<head>` entra en un bar y pide algo fuerte. El camarero le dice: «Lo siento, aquí no servimos sin `<body>`».",
+    "— ¿Cuál es el colmo de un maquetador web? — Tener problemas de personalidad y no saber dónde centrarse ni con `display: flex`.",
+    "Había una vez un desarrollador que olvidó cerrar una etiqueta `<strong>`... y desde ese día habla en negrita todo el rato.",
+    "— Doctor, veo todo borroso y desordenado en mi vida. — Te falta poner `<meta name=\"viewport\">` y un poco de `gap`.",
+    "Si la vida te da limones, ponles `border-radius: 50%` y conviértelos en naranjas.",
+    "Dos etiquetas `<div>` se encuentran por la calle: «¡Ey, cuánto tiempo! ¿Qué haces por aquí?» — «Nada, haciendo bulto como siempre».",
+    "— ¿Por qué el `<iframe>` estaba triste? — Porque se sentía encerrado en el mundo de otro.",
+    "El terror de todo estudiante de HTML: escribir `../` cinco veces seguidas y acabar en la carpeta de sistema de la NASA.",
+    "— ¿En qué se parece una página sin `<!DOCTYPE html>` a un lunes por la mañana? — En que ambos entran en modo peculiar sin avisar."
+  ];
+
+  const CHEER_MESSAGES = [
+    "¡Brillante! Código limpio y sin errores de sintaxis.",
+    "¡Clavado! El navegador ha renderizado tu respuesta a la primera.",
+    "¡Nivel Senior! Dominas las etiquetas como nadie.",
+    "¡F5 de gloria! Respuesta impecable.",
+    "¡Espectacular! Ni el validador del W3C te pone una pega."
+  ];
+
+  const SURPRISE_TYPES = [
+    {
+      id: "double",
+      icon: "⚡",
+      title: "¡Pregunta Doble!",
+      badge: "⚡ Puntos ×2",
+      desc: "Si aciertas esta pregunta, ¡los puntos ganados se multiplican por 2!"
+    },
+    {
+      id: "fifty",
+      icon: "🎁",
+      title: "¡Comodín 50/50!",
+      badge: "🎁 50/50 Activo",
+      desc: "Se han eliminado automáticamente dos opciones incorrectas para ayudarte."
+    },
+    {
+      id: "shield",
+      icon: "🛡️",
+      title: "¡Escudo de Racha!",
+      badge: "🛡️ Escudo Activo",
+      desc: "Estás protegido: si fallas esta pregunta, conservarás tu racha intacta."
+    }
+  ];
+
+  // Estado en memoria (sin localStorage/sessionStorage)
+  let state = {
+    deck: [],
+    lastQuestionKey: "",
+    currentIndex: 0,
+    score: 0,
+    correctCount: 0,
+    streak: 0,
+    bestStreak: 0,
+    surprisesFound: 0,
+    preSurprisesUsed: 0,
+    lastPreSurpriseIndex: -99,
+    activeSurprise: null,
+    answered: false,
+    jokePool: [],
+    modalOpen: false
+  };
+
+  // Referencias DOM
+  const screens = {
+    welcome: document.getElementById("screen-welcome"),
+    game: document.getElementById("screen-game"),
+    results: document.getElementById("screen-results")
+  };
+
+  const btnStart = document.getElementById("btn-start");
+  const btnNext = document.getElementById("btn-next");
+  const btnRestart = document.getElementById("btn-restart");
+  const progressText = document.getElementById("progress-text");
+  const streakBadge = document.getElementById("streak-badge");
+  const scoreBadge = document.getElementById("score-badge");
+  const progressFill = document.getElementById("progress-fill");
+  const progressBarContainer = document.getElementById("progress-bar-container");
+  const questionTopic = document.getElementById("question-topic");
+  const activeSurpriseTag = document.getElementById("active-surprise-tag");
+  const questionText = document.getElementById("question-text");
+  const optionsContainer = document.getElementById("options-container");
+
+  const feedbackArea = document.getElementById("feedback-area");
+  const feedbackBanner = document.getElementById("feedback-banner");
+  const feedbackHeading = document.getElementById("feedback-heading");
+  const feedbackPoints = document.getElementById("feedback-points");
+  const feedbackSubtext = document.getElementById("feedback-subtext");
+  const chestToast = document.getElementById("chest-toast");
+  const explanationText = document.getElementById("explanation-text");
+  const jokeCard = document.getElementById("joke-card");
+  const jokeText = document.getElementById("joke-text");
+
+  const surpriseModal = document.getElementById("surprise-modal");
+  const modalIcon = document.getElementById("modal-icon");
+  const modalTitle = document.getElementById("modal-title");
+  const modalDesc = document.getElementById("modal-desc");
+  const btnModalGo = document.getElementById("btn-modal-go");
+
+  // Escapado seguro HTML + soporte de *cursiva*
+  function formatSafeText(raw) {
+    const escaped = String(raw)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+    return escaped.replace(/\*([^*]+)\*/g, "<em>$1</em>");
+  }
+
+  // Barajado Fisher-Yates con entropía reforzada
+  function shuffle(array) {
+    const arr = array.slice();
+    for (let i = arr.length - 1; i > 0; i--) {
+      let randVal = Math.random();
+      if (typeof window !== "undefined" && window.crypto && window.crypto.getRandomValues) {
+        const buf = new Uint32Array(1);
+        window.crypto.getRandomValues(buf);
+        randVal = buf[0] / 4294967296;
+      }
+      const j = Math.floor(randVal * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function showScreen(name) {
+    Object.values(screens).forEach(s => s.classList.remove("active"));
+    screens[name].classList.add("active");
+
+    btnStart.classList.toggle("hidden", name !== "welcome");
+    btnNext.classList.toggle("hidden", name !== "game" || !state.answered);
+    btnRestart.classList.toggle("hidden", name !== "results");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function getMultiplier(streakCount) {
+    const mult = 1 + streakCount * 0.5;
+    return Math.min(3, mult);
+  }
+
+  function updateHeader() {
+    const total = state.deck.length;
+    const currentNum = state.currentIndex + 1;
+    progressText.textContent = `Pregunta ${currentNum} de ${total}`;
+    const mult = getMultiplier(state.streak);
+    streakBadge.textContent = `🔥 ${state.streak} (×${String(mult).replace(".", ",")})`;
+    scoreBadge.textContent = `💎 ${state.score} pts`;
+
+    const pct = Math.round(((state.answered ? currentNum : state.currentIndex) / total) * 100);
+    progressFill.style.width = `${pct}%`;
+    progressBarContainer.setAttribute("aria-valuenow", String(pct));
+  }
+
+  function getNextJoke() {
+    if (state.jokePool.length === 0) {
+      state.jokePool = shuffle(JOKES);
+    }
+    return state.jokePool.pop();
+  }
+
+  function startGame() {
+    const prevFirstKey = state.lastQuestionKey;
+    let shuffledQuestions = shuffle(QUESTIONS);
+
+    // Evita que la primera pregunta coincida con la primera de la partida anterior
+    if (shuffledQuestions.length > 1 && shuffledQuestions[0].question === prevFirstKey) {
+      const swapIdx = 1 + Math.floor(Math.random() * (shuffledQuestions.length - 1));
+      [shuffledQuestions[0], shuffledQuestions[swapIdx]] = [shuffledQuestions[swapIdx], shuffledQuestions[0]];
+    }
+
+    const preparedDeck = shuffledQuestions.map(q => {
+      const correctText = q.options[q.correctIndex];
+      const shuffledOptions = shuffle(q.options);
+      return {
+        topic: q.topic,
+        question: q.question,
+        options: shuffledOptions,
+        correctText: correctText,
+        explanation: q.explanation
+      };
+    });
+
+    state = {
+      deck: preparedDeck,
+      lastQuestionKey: preparedDeck.length > 0 ? preparedDeck[0].question : "",
+      currentIndex: 0,
+      score: 0,
+      correctCount: 0,
+      streak: 0,
+      bestStreak: 0,
+      surprisesFound: 0,
+      preSurprisesUsed: 0,
+      lastPreSurpriseIndex: -99,
+      activeSurprise: null,
+      answered: false,
+      jokePool: shuffle(JOKES),
+      modalOpen: false
+    };
+
+    showScreen("game");
+    prepareQuestion();
+  }
+
+  function prepareQuestion() {
+    state.answered = false;
+    state.activeSurprise = null;
+    btnNext.classList.add("hidden");
+    feedbackArea.classList.remove("visible");
+    chestToast.style.display = "none";
+    jokeCard.style.display = "none";
+    activeSurpriseTag.style.display = "none";
+
+    const idx = state.currentIndex;
+    const total = state.deck.length;
+    const maxPreSurprises = Math.floor(total / 5);
+
+    const canTriggerPreSurprise =
+      idx >= 2 &&
+      idx - state.lastPreSurpriseIndex > 1 &&
+      state.preSurprisesUsed < maxPreSurprises &&
+      Math.random() < 0.25;
+
+    renderQuestion();
+
+    if (canTriggerPreSurprise) {
+      const chosen = SURPRISE_TYPES[Math.floor(Math.random() * SURPRISE_TYPES.length)];
+      state.activeSurprise = chosen;
+      state.preSurprisesUsed++;
+      state.surprisesFound++;
+      state.lastPreSurpriseIndex = idx;
+
+      activeSurpriseTag.textContent = chosen.badge;
+      activeSurpriseTag.style.display = "inline-flex";
+
+      if (chosen.id === "fifty") {
+        applyFiftyFifty();
+      }
+
+      openSurpriseModal(chosen);
+    }
+  }
+
+  function openSurpriseModal(surprise) {
+    state.modalOpen = true;
+    modalIcon.textContent = surprise.icon;
+    modalTitle.textContent = surprise.title;
+    modalDesc.textContent = surprise.desc;
+    surpriseModal.classList.add("active");
+    btnModalGo.focus();
+  }
+
+  function closeSurpriseModal() {
+    state.modalOpen = false;
+    surpriseModal.classList.remove("active");
+  }
+
+  function renderQuestion() {
+    const q = state.deck[state.currentIndex];
+    updateHeader();
+
+    questionTopic.textContent = `IFCD0110 · ${q.topic}`;
+    questionText.innerHTML = formatSafeText(q.question);
+
+    optionsContainer.innerHTML = "";
+    const letters = ["A", "B", "C", "D"];
+
+    q.options.forEach((optText, i) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "option-btn";
+      btn.dataset.index = String(i);
+      btn.dataset.letter = letters[i];
+      btn.innerHTML = `
+        <span class="option-letter">${letters[i]}</span>
+        <span class="option-text">${formatSafeText(optText)}</span>
+      `;
+      btn.addEventListener("click", () => handleAnswer(i));
+      optionsContainer.appendChild(btn);
+    });
+  }
+
+  function applyFiftyFifty() {
+    const q = state.deck[state.currentIndex];
+    const buttons = Array.from(optionsContainer.querySelectorAll(".option-btn"));
+    const wrongButtons = buttons.filter((_, idx) => q.options[idx] !== q.correctText);
+    const toEliminate = shuffle(wrongButtons).slice(0, 2);
+    toEliminate.forEach(btn => {
+      btn.classList.add("eliminated");
+      btn.disabled = true;
+    });
+  }
+
+  function handleAnswer(selectedIndex) {
+    if (state.answered || state.modalOpen) return;
+    state.answered = true;
+
+    const q = state.deck[state.currentIndex];
+    const buttons = Array.from(optionsContainer.querySelectorAll(".option-btn"));
+    const selectedText = q.options[selectedIndex];
+    const isCorrect = selectedText === q.correctText;
+
+    buttons.forEach((btn, idx) => {
+      btn.disabled = true;
+      if (q.options[idx] === q.correctText) {
+        btn.classList.add("correct");
+      } else if (idx === selectedIndex && !isCorrect) {
+        btn.classList.add("wrong");
+      }
+    });
+
+    if (isCorrect) {
+      const mult = getMultiplier(state.streak);
+      const doubleFactor = state.activeSurprise && state.activeSurprise.id === "double" ? 2 : 1;
+      const earned = Math.round(100 * mult * doubleFactor);
+
+      state.score += earned;
+      state.correctCount++;
+      state.streak++;
+      if (state.streak > state.bestStreak) {
+        state.bestStreak = state.streak;
+      }
+
+      const cheer = CHEER_MESSAGES[Math.floor(Math.random() * CHEER_MESSAGES.length)];
+      feedbackBanner.className = "feedback-banner success";
+      feedbackHeading.textContent = "✅ ¡Correcto!";
+      feedbackPoints.textContent = `+${earned} pts`;
+      feedbackSubtext.textContent = cheer;
+
+      if (Math.random() < 0.18) {
+        const rewards = [50, 100, 150, 200];
+        const bonus = rewards[Math.floor(Math.random() * rewards.length)];
+        state.score += bonus;
+        state.surprisesFound++;
+        chestToast.textContent = `🎁 ¡Cofre sorpresa encontrado! +${bonus} puntos extra`;
+        chestToast.style.display = "block";
+        launchConfetti(45);
+      }
+
+      if (Math.random() < 0.17) {
+        state.surprisesFound++;
+        jokeText.innerHTML = formatSafeText(getNextJoke());
+        jokeCard.style.display = "block";
+      }
+    } else {
+      const hasShield = state.activeSurprise && state.activeSurprise.id === "shield";
+      if (!hasShield) {
+        state.streak = 0;
+      }
+
+      feedbackBanner.className = "feedback-banner error";
+      feedbackHeading.textContent = "❌ ¡Ups, no era esa!";
+      feedbackPoints.textContent = "+0 pts";
+      feedbackSubtext.innerHTML = `La respuesta correcta era: <strong>${formatSafeText(q.correctText)}</strong>. ${
+        hasShield ? "🛡️ ¡Tu escudo ha salvado la racha!" : "La racha vuelve a empezar."
+      }`;
+
+      if (Math.random() < 0.40) {
+        state.surprisesFound++;
+        jokeText.innerHTML = formatSafeText(getNextJoke());
+        jokeCard.style.display = "block";
+      }
+    }
+
+    explanationText.innerHTML = formatSafeText(q.explanation);
+    feedbackArea.classList.add("visible");
+    updateHeader();
+
+    const isLast = state.currentIndex === state.deck.length - 1;
+    btnNext.textContent = isLast ? "🏆 Ver Resultados" : "Siguiente Pregunta ➔";
+    btnNext.classList.remove("hidden");
+  }
+
+  function nextStep() {
+    if (state.currentIndex < state.deck.length - 1) {
+      state.currentIndex++;
+      prepareQuestion();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      showResults();
+    }
+  }
+
+  function showResults() {
+    showScreen("results");
+    const total = state.deck.length;
+    const pct = Math.round((state.correctCount / total) * 100);
+
+    document.getElementById("final-score").textContent = `${state.score} pts`;
+    document.getElementById("metric-accuracy").textContent = `${pct}%`;
+    document.getElementById("metric-fraction").textContent = `${state.correctCount} / ${total}`;
+    document.getElementById("metric-streak").textContent = `${state.bestStreak}`;
+    document.getElementById("metric-surprises").textContent = `${state.surprisesFound}`;
+
+    const trophy = document.getElementById("result-trophy");
+    const msgBox = document.getElementById("motivation-box");
+
+    if (pct >= 90) {
+      trophy.textContent = "👑";
+      msgBox.textContent = "¡Sobresaliente absoluto! Dominas HTML5 como un auténtico profesional del desarrollo web.";
+      launchConfetti(140);
+    } else if (pct >= 75) {
+      trophy.textContent = "🏆";
+      msgBox.textContent = "¡Notable alto! Tienes una base muy sólida para aprobar con éxito el módulo IFCD0110.";
+      launchConfetti(90);
+    } else if (pct >= 55) {
+      trophy.textContent = "🎯";
+      msgBox.textContent = "¡Aprobado con buen ritmo! Repasa un par de etiquetas semánticas y rutas relativas para ir a por el 10.";
+    } else if (pct >= 35) {
+      trophy.textContent = "🛠️";
+      msgBox.textContent = "¡Buen intento! Ya conoces varias etiquetas clave; lee las explicaciones didácticas y vuelve a intentarlo.";
+    } else {
+      trophy.textContent = "📚";
+      msgBox.textContent = "¡Toca abrir el editor de código y practicar! Cada intento te acerca más a dominar la estructura web.";
+    }
+  }
+
+  function launchConfetti(count) {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const canvas = document.getElementById("confetti-canvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const colors = ["#00f5d4", "#9b5de5", "#fee440", "#00e676", "#ff4d6d"];
+    const pieces = Array.from({ length: count }, () => ({
+      x: Math.random() * canvas.width,
+      y: -20 - Math.random() * 120,
+      w: 8 + Math.random() * 6,
+      h: 6 + Math.random() * 6,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      vx: -2 + Math.random() * 4,
+      vy: 3 + Math.random() * 4,
+      rot: Math.random() * Math.PI * 2,
+      vrot: -0.1 + Math.random() * 0.2
+    }));
+
+    let frame = 0;
+    function tick() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      pieces.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.rot += p.vrot;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        ctx.restore();
+      });
+      frame++;
+      if (frame < 130) {
+        requestAnimationFrame(tick);
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+    requestAnimationFrame(tick);
+  }
+
+  btnStart.addEventListener("click", startGame);
+  btnNext.addEventListener("click", nextStep);
+  btnRestart.addEventListener("click", startGame);
+  btnModalGo.addEventListener("click", closeSurpriseModal);
+
+  document.addEventListener("keydown", (e) => {
+    if (state.modalOpen) {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        closeSurpriseModal();
+      }
+      return;
+    }
+
+    if (screens.welcome.classList.contains("active") && e.key === "Enter") {
+      e.preventDefault();
+      startGame();
+      return;
+    }
+
+    if (screens.results.classList.contains("active") && e.key === "Enter") {
+      e.preventDefault();
+      startGame();
+      return;
+    }
+
+    if (screens.game.classList.contains("active")) {
+      if (!state.answered) {
+        const keyMap = { a: 0, b: 1, c: 2, d: 3 };
+        const idx = keyMap[e.key.toLowerCase()];
+        if (idx !== undefined) {
+          const btn = optionsContainer.querySelectorAll(".option-btn")[idx];
+          if (btn && !btn.disabled) {
+            e.preventDefault();
+            handleAnswer(idx);
+          }
+        }
+      } else if (e.key === "Enter") {
+        e.preventDefault();
+        nextStep();
+      }
+    }
+  });
+})();
+</script>
+</body>
+</html>
